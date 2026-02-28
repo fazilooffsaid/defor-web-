@@ -6,8 +6,8 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ РАЗДАЁМ ФРОНТЕНД (HTML, CSS, JS) ИЗ ПАПКИ backend
-app.use(express.static(path.join(__dirname))); // раздаёт всё, что лежит рядом с server.js
+// Раздаём статические файлы из папки backend (если есть)
+app.use(express.static(path.join(__dirname)));
 
 // Middleware
 app.use(cors({
@@ -34,14 +34,14 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', message: 'DEFOR API is running' });
 });
 
-// ✅ ЕСЛИ НИ ОДИН РОУТ НЕ ПОДОШЁЛ — ОТДАЁМ index.html (для SPA)
+// 👇 ИСПРАВЛЕНО: отдаём index.html из КОРНЕВОЙ папки
 app.use((req, res, next) => {
     // Если запрос начинается с /api — пропускаем на 404
     if (req.path.startsWith('/api')) {
         return next();
     }
-    // Иначе отдаём index.html (чтобы фронтенд сам разбирал роуты)
-    res.sendFile(path.join(__dirname, 'index.html'));
+    // Поднимаемся на уровень выше из /backend в корень и отдаём index.html
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // 404 handler (только для /api)
