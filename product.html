@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEFOR | Товар</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin: 0; font-family: 'Inter', sans-serif; background: #fff; }
+        .product-layout { display: grid; grid-template-columns: 70% 30%; min-height: calc(100vh - 80px); margin-top: 80px; }
+        .all-images-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #f8f8f8; }
+        .product-image-full { width: 100%; aspect-ratio: 3/4; overflow: hidden; background: white; }
+        .product-image-full img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-image-full:hover img { transform: scale(1.05); }
+        .product-info-panel { padding: 60px 40px; background: white; position: sticky; top: 80px; height: calc(100vh - 80px); overflow-y: auto; }
+        .badge { display: inline-block; background: #d4af37; color: white; padding: 4px 12px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; }
+        .collection-name { font-size: 12px; color: #999; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+        .product-name { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 400; color: #1a1a1a; margin-bottom: 20px; line-height: 1.2; }
+        .price { font-size: 24px; font-weight: 300; color: #1a1a1a; margin-bottom: 35px; }
+        .color-picker { margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #e5e5e5; }
+        .color-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #666; margin-bottom: 15px; }
+        .color-options { display: flex; gap: 10px; }
+        .color-box { width: 45px; height: 45px; border: 1px solid #ddd; cursor: pointer; transition: all 0.3s; }
+        .color-box:hover, .color-box.selected { border-color: #1a1a1a; box-shadow: 0 0 0 1px #1a1a1a; }
+        .color-box img { width: 100%; height: 100%; object-fit: cover; }
+        .stock { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; font-size: 13px; color: #27ae60; }
+        .dot { width: 6px; height: 6px; background: #27ae60; border-radius: 50%; }
+        .add-button { width: 100%; background: #1a1a1a; color: white; border: none; padding: 16px; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+        .add-button:hover { background: #333; }
+        @media (max-width: 1024px) {
+            .product-layout { grid-template-columns: 1fr; }
+            .all-images-grid { grid-template-columns: 1fr; }
+            .product-info-panel { position: relative; top: 0; height: auto; }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header" style="position:fixed;top:0;width:100%;z-index:1000;background:#1a2332;">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo"><a href="index.html" style="color:white;text-decoration:none;">DEFOR</a></div>
+                <nav class="main-nav">
+                    <a href="index.html" class="nav-link" data-i18n="nav-home">Главная</a>
+                    <a href="new-arrivals.html" class="nav-link" data-i18n="nav-new">Новинки</a>
+                    <a href="bags.html" class="nav-link" data-i18n="nav-bags">Сумки</a>
+                    <a href="other.html" class="nav-link" data-i18n="nav-other">Другое</a>
+                    <a href="accessories.html" class="nav-link" data-i18n="nav-accessories">Аксессуары</a>
+                </nav>
+                <div class="header-icons">
+                    <div class="lang-selector">
+                        <button class="lang-btn" data-lang="ru">RU</button>
+                        <button class="lang-btn" data-lang="uz">UZ</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                    <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'" style="color:white;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="cart-count" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="product-layout" id="product-container">
+        <div style="grid-column:1/-1;text-align:center;padding:100px;">
+            <p data-i18n="product-loading">Загрузка...</p>
+        </div>
+    </div>
+
+    <div class="toast-notification" id="toast-notification">
+        <div class="toast-icon">✓</div>
+        <div class="toast-content">
+            <div class="toast-title" data-i18n="toast-added">Товар добавлен в корзину!</div>
+            <div class="toast-product" id="toast-product-info"></div>
+        </div>
+    </div>
+
+    <style>
+    .telegram-chat-widget { position: fixed; bottom: 30px; left: 30px; z-index: 9999; }
+    .telegram-chat-button { width: 60px; height: 60px; background: linear-gradient(135deg, #0088cc, #00a6e8); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,136,204,0.4); text-decoration: none; transition: all 0.3s; }
+    .telegram-chat-button:hover { transform: scale(1.1); }
+    .telegram-chat-button svg { width: 32px; height: 32px; fill: white; }
+    </style>
+    <div class="telegram-chat-widget">
+        <a href="https://t.me/faz1llooffss" target="_blank" class="telegram-chat-button">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+        </a>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        let product = null;
+        let selectedColorIndex = 0;
+
+        function getLangLocal() {
+            return (typeof getLang === 'function' ? getLang() : null) || localStorage.getItem('defor_lang') || 'ru';
+        }
+
+        function getTr() {
+            const lang = getLangLocal();
+            const map = {
+                ru: { new: 'НОВЫЕ ПОСТУПЛЕНИЯ', instock: 'В наличии', addtobag: 'ДОБАВИТЬ В СУМКУ', desc: 'ОПИСАНИЕ', color: 'ЦВЕТ', notfound: 'Товар не найден' },
+                uz: { new: 'YANGI KELGANLAR', instock: 'Mavjud', addtobag: "SAVATCHAGA QO'SHISH", desc: 'TAVSIF', color: 'RANG', notfound: 'Mahsulot topilmadi' },
+                en: { new: 'NEW ARRIVAL', instock: 'In stock', addtobag: 'ADD TO BAG', desc: 'DESCRIPTION', color: 'COLOUR', notfound: 'Product not found' }
+            };
+            return map[lang] || map.ru;
+        }
+
+        function render() {
+            if (!product) return;
+            const colors = product.colors || [{ name: 'Стандарт', available: true, images: product.images }];
+            const color = colors[selectedColorIndex];
+            const images = color.images || product.images;
+            const tr = getTr();
+
+            document.getElementById('product-container').innerHTML = `
+                <div class="all-images-grid">
+                    ${images.map(img => `<div class="product-image-full"><img src="${img}" alt="${product.title}"></div>`).join('')}
+                </div>
+                <div class="product-info-panel">
+                    ${product.isNew ? `<div class="badge">${tr.new}</div>` : ''}
+                    <div class="collection-name">${product.collection || ''}</div>
+                    <h1 class="product-name">${product.title}</h1>
+                    <div class="price">UZS ${Number(product.price).toLocaleString('en-US')}</div>
+                    ${colors.length > 1 ? `
+                        <div class="color-picker">
+                            <div class="color-label">${tr.color}: ${color.name}</div>
+                            <div class="color-options">
+                                ${colors.map((c, i) => `
+                                    <div class="color-box ${i === selectedColorIndex ? 'selected' : ''}" onclick="selectColor(${i})">
+                                        <img src="${c.images[0]}" alt="${c.name}">
+                                    </div>`).join('')}
+                            </div>
+                        </div>` : ''}
+                    <div class="stock"><div class="dot"></div><span class="stock-text">${tr.instock}</span></div>
+                    <button class="add-button" id="addToBagBtn">${tr.addtobag}</button>
+                    ${product.description ? `
+                        <div style="margin-top:30px;padding-top:30px;border-top:1px solid #e5e5e5;">
+                            <div class="desc-label" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:15px;color:#666;">${tr.desc}</div>
+                            <div style="font-size:14px;line-height:1.6;color:#666;">${product.description}</div>
+                        </div>` : ''}
+                </div>`;
+
+            setTimeout(() => {
+                const btn = document.getElementById('addToBagBtn');
+                if (btn) btn.onclick = handleAdd;
+            }, 50);
+        }
+
+        window.selectColor = (i) => { selectedColorIndex = i; render(); };
+
+        function handleAdd() {
+            const colors = product.colors || [{ name: 'Стандарт', available: true, images: product.images }];
+            const color = colors[selectedColorIndex];
+            if (typeof addToCart === 'function') {
+                addToCart(product, 1, color.name);
+                updateCartCount();
+                const toast = document.getElementById('toast-notification');
+                if (toast) {
+                    document.getElementById('toast-product-info').textContent = `${product.title} (${color.name})`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 3000);
+                }
+            }
+        }
+
+        window.handleAdd = handleAdd;
+
+        // Load product from API (PostgreSQL) with localStorage fallback
+        async function loadProduct() {
+            if (!productId) {
+                showNotFound();
+                return;
+            }
+            try {
+                product = await getProductByIdAsync(productId);
+            } catch(e) {
+                product = getProductById(productId);
+            }
+            if (!product) { showNotFound(); return; }
+            render();
+            updateCartCount();
+        }
+
+        function showNotFound() {
+            const tr = getTr();
+            document.getElementById('product-container').innerHTML =
+                `<div style="grid-column:1/-1;text-align:center;padding:100px;"><h1>${tr.notfound}</h1></div>`;
+        }
+
+        loadProduct();
+
+        // Re-render when language switches
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('lang-btn')) {
+                setTimeout(render, 150);
+            }
+        });
+    </script>
+    <script src="lang-switcher.js"></script>
+</body>
+</html>

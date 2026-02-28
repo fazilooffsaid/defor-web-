@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEFOR | Сумки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo"><a href="index.html">DEFOR</a></div>
+                <nav class="main-nav">
+                    <a href="index.html" class="nav-link" data-i18n="nav-home">Главная</a>
+                    <a href="new-arrivals.html" class="nav-link" data-i18n="nav-new">Новинки</a>
+                    <a href="bags.html" class="nav-link active" data-i18n="nav-bags">Сумки</a>
+                    <a href="other.html" class="nav-link" data-i18n="nav-other">Другое</a>
+                    <a href="accessories.html" class="nav-link" data-i18n="nav-accessories">Аксессуары</a>
+                </nav>
+                <div class="header-icons">
+                    <div class="lang-selector">
+                        <button class="lang-btn" data-lang="ru">RU</button>
+                        <button class="lang-btn" data-lang="uz">UZ</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                    <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="cart-count" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section style="padding: 60px 0;">
+        <div class="container">
+            <div style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                <a href="index.html" style="color: #4a90e2; text-decoration: none;" data-i18n="nav-home">Главная</a>
+                &gt;
+                <span style="color: #4a90e2;" data-i18n="page-bags-breadcrumb">Сумки</span>
+            </div>
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; margin-bottom: 40px;" data-i18n="page-bags-title">Сумки</h1>
+            <div class="product-grid" id="bags-products"></div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 DEFOR. <span data-i18n="footer-rights">Все права защищены</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast-notification" id="toast-notification">
+        <div class="toast-icon">✓</div>
+        <div class="toast-content">
+            <div class="toast-title" data-i18n="toast-added">Товар добавлен в корзину!</div>
+            <div class="toast-product" id="toast-product-info"></div>
+        </div>
+    </div>
+
+    <style>
+    .telegram-chat-widget { position: fixed; bottom: 30px; left: 30px; z-index: 9999; }
+    .telegram-chat-button { width: 60px; height: 60px; background: linear-gradient(135deg, #0088cc, #00a6e8); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,136,204,0.4); text-decoration: none; transition: all 0.3s; }
+    .telegram-chat-button:hover { transform: scale(1.1); }
+    .telegram-chat-button svg { width: 32px; height: 32px; fill: white; }
+    </style>
+    <div class="telegram-chat-widget">
+        <a href="https://t.me/faz1llooffss" target="_blank" class="telegram-chat-button">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+        </a>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+    <script>
+        function renderBags() {
+            const lang = getLang ? getLang() : (localStorage.getItem('defor_lang') || 'ru');
+            const badgeMap = { ru: 'Новые поступления', uz: 'Yangi kelganlar', en: 'New Arrival' };
+            const comingMap = { ru: 'Товары скоро появятся', uz: "Mahsulotlar tez orada paydo bo'ladi", en: 'Products coming soon' };
+
+            const products = getDB().filter(p => p.category === 'bags');
+            document.getElementById('bags-products').innerHTML = products.map(p => `
+                <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'">
+                    <div class="product-image">
+                        ${p.isNew ? `<div class="product-badge">${badgeMap[lang] || badgeMap.ru}</div>` : ''}
+                        <img src="${p.images[0]}" alt="${p.title}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-collection">${p.collection}</div>
+                        <div class="product-name">${p.title}</div>
+                        <div class="product-color">${p.colors[0].name}</div>
+                        <div class="product-price">${Number(p.price).toLocaleString('ru-RU')} UZS</div>
+                    </div>
+                </div>
+            `).join('') || `<p style="grid-column:1/-1;text-align:center;padding:60px;color:#999;">${comingMap[lang] || comingMap.ru}</p>`;
+        }
+
+        // Async load from API
+        getDBAsync().then(data => {
+            window._dbCache = data;
+            localStorage.setItem('defor_db', JSON.stringify(data));
+            renderBags();
+        });
+        renderBags();
+        updateCartCount();
+    </script>
+    <script src="lang-switcher.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug - DEFOR</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .section { background: white; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        h2 { color: #333; }
+        pre { background: #f9f9f9; padding: 10px; overflow-x: auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .ok { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DEFOR Debug Page</h1>
+    
+    <div class="section">
+        <h2>📊 LocalStorage Status</h2>
+        <div id="storage-status"></div>
+    </div>
+    
+    <div class="section">
+        <h2>📦 Products Data (defor_db)</h2>
+        <div id="products-data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🛒 Cart Data (defor_cart)</h2>
+        <div id="cart-data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🌍 Language (defor_lang)</h2>
+        <div id="lang-data"></div>
+    </div>
+    
+    <div class="section">
+        <h2>🧪 Quick Actions</h2>
+        <button onclick="addTestProduct()">Добавить тестовый товар</button>
+        <button onclick="clearAll()">Очистить все данные</button>
+        <button onclick="location.reload()">Обновить страницу</button>
+    </div>
+    
+    <script>
+        function checkStorage() {
+            const statusDiv = document.getElementById('storage-status');
+            const productsDiv = document.getElementById('products-data');
+            const cartDiv = document.getElementById('cart-data');
+            const langDiv = document.getElementById('lang-data');
+            
+            // Check if localStorage is available
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                statusDiv.innerHTML = '<div class="status ok">✅ localStorage доступен</div>';
+            } catch (e) {
+                statusDiv.innerHTML = '<div class="status error">❌ localStorage недоступен: ' + e.message + '</div>';
+                return;
+            }
+            
+            // Check products
+            const productsRaw = localStorage.getItem('defor_db');
+            if (!productsRaw) {
+                productsDiv.innerHTML = '<div class="status error">❌ Нет данных товаров (defor_db пуст)</div>';
+            } else {
+                try {
+                    const products = JSON.parse(productsRaw);
+                    productsDiv.innerHTML = `
+                        <div class="status ok">✅ Найдено товаров: ${products.length}</div>
+                        <pre>${JSON.stringify(products, null, 2)}</pre>
+                    `;
+                } catch (e) {
+                    productsDiv.innerHTML = '<div class="status error">❌ Ошибка парсинга данных: ' + e.message + '</div>';
+                }
+            }
+            
+            // Check cart
+            const cartRaw = localStorage.getItem('defor_cart');
+            if (!cartRaw) {
+                cartDiv.innerHTML = '<div class="status ok">✅ Корзина пуста</div>';
+            } else {
+                try {
+                    const cart = JSON.parse(cartRaw);
+                    cartDiv.innerHTML = `
+                        <div class="status ok">✅ В корзине: ${cart.length} товаров</div>
+                        <pre>${JSON.stringify(cart, null, 2)}</pre>
+                    `;
+                } catch (e) {
+                    cartDiv.innerHTML = '<div class="status error">❌ Ошибка парсинга корзины: ' + e.message + '</div>';
+                }
+            }
+            
+            // Check language
+            const lang = localStorage.getItem('defor_lang') || 'ru';
+            langDiv.innerHTML = `<div class="status ok">✅ Текущий язык: ${lang}</div>`;
+        }
+        
+        function addTestProduct() {
+            const testProduct = {
+                id: 'PROD-TEST-' + Date.now(),
+                title: 'Тестовая сумка DEFOR',
+                price: 1500000,
+                category: 'bags',
+                isNew: true,
+                description: 'Это тестовый товар для проверки работы сайта',
+                variants: [
+                    {
+                        colorName: 'Черный',
+                        colorHex: '#000000',
+                        inStock: true,
+                        images: [
+                            'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="500"><rect fill="%23000" width="400" height="500"/><text x="50%" y="50%" fill="white" text-anchor="middle" font-size="24">TEST PRODUCT</text></svg>'
+                        ]
+                    }
+                ]
+            };
+            
+            const existing = localStorage.getItem('defor_db');
+            const products = existing ? JSON.parse(existing) : [];
+            products.push(testProduct);
+            localStorage.setItem('defor_db', JSON.stringify(products));
+            
+            alert('✅ Тестовый товар добавлен!');
+            checkStorage();
+        }
+        
+        function clearAll() {
+            if (confirm('Вы уверены? Это удалит ВСЕ данные!')) {
+                localStorage.clear();
+                alert('🗑 Все данные удалены');
+                checkStorage();
+            }
+        }
+        
+        // Run check on load
+        checkStorage();
+    </script>
+</body>
+</html>

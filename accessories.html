@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEFOR | Exclusive Goods</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hero-banner {
+            position: relative;
+            height: 85vh;
+            min-height: 600px;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2840 50%, #0f1a2e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(74,144,226,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(74,144,226,0.08) 0%, transparent 50%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 30px;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(40px, 7vw, 72px);
+            font-weight: 300;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .hero-subtitle {
+            font-size: 20px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 50px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+        .btn-primary {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(74,144,226,0.3);
+        }
+        .btn-primary:hover {
+            background: #357abd;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74,144,226,0.4);
+        }
+        .showcase-section {
+            padding: 100px 0;
+            background: #f8f9fa;
+        }
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .showcase-item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #e8e8e8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .showcase-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        .showcase-item img { width: 100%; height: 100%; object-fit: cover; }
+        .showcase-item .empty-slot {
+            text-align: center;
+            color: #bbb;
+            font-size: 13px;
+            padding: 20px;
+        }
+        .showcase-item .empty-slot svg { display: block; margin: 0 auto 10px; }
+        @media (max-width: 1024px) { .showcase-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px)  { .showcase-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo"><a href="index.html">DEFOR</a></div>
+                <nav class="main-nav">
+                    <a href="index.html" class="nav-link active" data-i18n="nav-home">Главная</a>
+                    <a href="new-arrivals.html" class="nav-link" data-i18n="nav-new">Новинки</a>
+                    <a href="bags.html" class="nav-link" data-i18n="nav-bags">Сумки</a>
+                    <a href="other.html" class="nav-link" data-i18n="nav-other">Другое</a>
+                    <a href="accessories.html" class="nav-link" data-i18n="nav-accessories">Аксессуары</a>
+                </nav>
+                <div class="header-icons">
+                    <div class="lang-selector">
+                        <button class="lang-btn" data-lang="ru">RU</button>
+                        <button class="lang-btn" data-lang="uz">UZ</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                    <button class="icon-btn cart-btn" onclick="window.location.href='cart.html'" aria-label="Cart">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span class="cart-count" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner" id="hero-banner">
+        <div class="hero-content">
+            <h1 class="hero-title" data-i18n="hero-title">Не вы, а стиль меняется следуя вам</h1>
+            <p class="hero-subtitle" data-i18n="hero-subtitle">Эксклюзивная коллекция премиальных аксессуаров</p>
+            <button class="btn-primary" onclick="window.location.href='new-arrivals.html'">
+                <span data-i18n="hero-btn">ВОЙТИ В КРУГ ИЗБРАННЫХ</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <section class="showcase-section">
+        <div class="container">
+            <h2 class="section-title" style="text-align:center;margin-bottom:60px;font-size:42px;" data-i18n="collection-title">Наша коллекция</h2>
+            <div class="showcase-grid" id="showcase-grid">
+                <!-- Заполняется из localStorage через JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Cards -->
+    <section class="category-section">
+        <div class="container">
+            <h2 class="section-title" data-i18n="categories-title">Категории</h2>
+            <div class="category-grid">
+                <div class="category-card" onclick="window.location.href='new-arrivals.html'">
+                    <div class="category-image">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="cat-new">Новинки</h3>
+                </div>
+                <div class="category-card" onclick="window.location.href='bags.html'">
+                    <div class="category-image">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="cat-bags">Сумки</h3>
+                </div>
+                <div class="category-card" onclick="window.location.href='other.html'">
+                    <div class="category-image">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="cat-other">Другое</h3>
+                </div>
+                <div class="category-card" onclick="window.location.href='accessories.html'">
+                    <div class="category-image">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="cat-accessories">Аксессуары</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">DEFOR</div>
+                    <p class="footer-desc" data-i18n="footer-desc">Премиальные аксессуары для современного стиля</p>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer-company">Компания</h4>
+                    <ul>
+                        <li><a href="#" data-i18n="footer-about">О нас</a></li>
+                        <li><a href="#" data-i18n="footer-contact">Контакты</a></li>
+                        <li><a href="https://t.me/faz1llooffss" target="_blank" data-i18n="footer-support">Поддержка</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 data-i18n="footer-social">Связь</h4>
+                    <ul>
+                        <li><a href="https://www.instagram.com/faz1llooffss11?igsh=amx1cGxrdWFtZTg0" target="_blank">Instagram</a></li>
+                        <li><a href="https://t.me/faz1llooffss" target="_blank">Telegram</a></li>
+                        <li><a href="#">+998 90 123 45 67</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DEFOR. <span data-i18n="footer-rights">Все права защищены</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast-notification" id="toast-notification">
+        <div class="toast-icon">✓</div>
+        <div class="toast-content">
+            <div class="toast-title" data-i18n="toast-added">Товар добавлен в корзину!</div>
+            <div class="toast-product" id="toast-product-info"></div>
+        </div>
+    </div>
+
+    <style>
+    .telegram-chat-widget { position: fixed; bottom: 30px; left: 30px; z-index: 9999; }
+    .telegram-chat-button { width: 60px; height: 60px; background: linear-gradient(135deg, #0088cc, #00a6e8); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,136,204,0.4); text-decoration: none; transition: all 0.3s; }
+    .telegram-chat-button:hover { transform: scale(1.1); }
+    .telegram-chat-button svg { width: 32px; height: 32px; fill: white; }
+    </style>
+    <div class="telegram-chat-widget">
+        <a href="https://t.me/faz1llooffss" target="_blank" class="telegram-chat-button" aria-label="Telegram">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+        </a>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // ── Загружаем фото коллекции из localStorage (Admin → "Наша коллекция") ──
+        function loadShowcasePhotos() {
+            const grid = document.getElementById('showcase-grid');
+            if (!grid) return;
+
+            const emptyIcon = `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>`;
+
+            let html = '';
+            for (let i = 0; i < 3; i++) {
+                const photo = localStorage.getItem(`defor_showcase_${i}`);
+                if (photo) {
+                    html += `<div class="showcase-item"><img src="${photo}" alt="DEFOR коллекция ${i+1}"></div>`;
+                } else {
+                    html += `<div class="showcase-item"><div class="empty-slot">${emptyIcon}Фото ${i+1}</div></div>`;
+                }
+            }
+            grid.innerHTML = html;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadShowcasePhotos();
+            updateCartCount();
+        });
+    </script>
+
+    <!-- lang-switcher ПОСЛЕДНИМ -->
+    <script src="lang-switcher.js"></script>
+</body>
+</html>
