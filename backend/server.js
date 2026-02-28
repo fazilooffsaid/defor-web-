@@ -6,7 +6,7 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ✅ КОРЕНЬ ПРОЕКТА — поднимаемся на уровень выше /backend
+// ✅ КОРЕНЬ ПРОЕКТА — на уровень выше /backend
 const ROOT = path.join(__dirname, '..');
 
 // ✅ Статические файлы из КОРНЯ (style.css, app.js, все .html, картинки)
@@ -19,8 +19,13 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    console.log(`${req.method} ${req.path}`);
     next();
+});
+
+// ✅ Блокируем старый /admin.html — 404
+app.get('/admin.html', (req, res) => {
+    res.status(404).sendFile(path.join(ROOT, 'index.html'));
 });
 
 // ===== API ROUTES =====
@@ -31,7 +36,7 @@ app.use('/api/hero',     require('./routes/hero'));
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', root: ROOT });
+    res.json({ status: 'ok', root: ROOT, env: process.env.NODE_ENV });
 });
 
 // ===== HTML страницы из корня =====
@@ -40,8 +45,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:page.html', (req, res) => {
-    const filePath = path.join(ROOT, `${req.params.page}.html`);
-    res.sendFile(filePath, err => {
+    const file = path.join(ROOT, req.params.page + '.html');
+    res.sendFile(file, err => {
         if (err) res.sendFile(path.join(ROOT, 'index.html'));
     });
 });
@@ -60,9 +65,9 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`DEFOR running on http://localhost:${PORT}`);
-    console.log(`Serving files from: ${ROOT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`DEFOR running: http://localhost:${PORT}`);
+    console.log(`Files from: ${ROOT}`);
+    console.log(`Env: ${process.env.NODE_ENV}`);
 });
 
 module.exports = app;

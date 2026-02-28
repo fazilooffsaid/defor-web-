@@ -4,7 +4,10 @@
 // Корзина → localStorage (сессионные данные)
 // ============================================================
 
-const API = 'http://localhost:3000/api';
+// ✅ Автоматически определяем URL в зависимости от окружения
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000/api'
+    : '/api';
 
 // ── Кэш товаров (чтобы getDB() работал синхронно после первой загрузки) ──
 let _cache = JSON.parse(localStorage.getItem('defor_db')) || [];
