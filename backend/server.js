@@ -4,64 +4,65 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Раздаём статические файлы из папки backend (если есть)
-app.use(express.static(path.join(__dirname)));
+// ✅ КОРЕНЬ ПРОЕКТА — поднимаемся на уровень выше /backend
+const ROOT = path.join(__dirname, '..');
 
-// Middleware
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://127.0.0.1:5500',
-    credentials: true
-}));
+// ✅ Статические файлы из КОРНЯ (style.css, app.js, все .html, картинки)
+app.use(express.static(ROOT));
+
+// ✅ CORS — разрешаем всё
+app.use(cors({ origin: '*', credentials: true }));
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Логирование
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     next();
 });
 
-// Routes
+// ===== API ROUTES =====
 app.use('/api/products', require('./routes/products'));
-app.use('/api/orders', require('./routes/orders'));
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/hero', require('./routes/hero'));
+app.use('/api/orders',   require('./routes/orders'));
+app.use('/api/auth',     require('./routes/auth'));
+app.use('/api/hero',     require('./routes/hero'));
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', message: 'DEFOR API is running' });
+    res.json({ status: 'ok', root: ROOT });
 });
 
-// 👇 ИСПРАВЛЕНО: отдаём index.html из КОРНЕВОЙ папки
-app.use((req, res, next) => {
-    // Если запрос начинается с /api — пропускаем на 404
-    if (req.path.startsWith('/api')) {
-        return next();
-    }
-    // Поднимаемся на уровень выше из /backend в корень и отдаём index.html
-    res.sendFile(path.join(__dirname, '..', 'index.html'));
+// ===== HTML страницы из корня =====
+app.get('/', (req, res) => {
+    res.sendFile(path.join(ROOT, 'index.html'));
 });
 
-// 404 handler (только для /api)
-app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' });
-});
-
-// Error handler
-app.use((err, req, res, next) => {
-    console.error('❌ Error:', err);
-    res.status(500).json({ 
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : undefined
+app.get('/:page.html', (req, res) => {
+    const filePath = path.join(ROOT, `${req.params.page}.html`);
+    res.sendFile(filePath, err => {
+        if (err) res.sendFile(path.join(ROOT, 'index.html'));
     });
 });
 
-// Start server
+// ===== Всё остальное → index.html =====
+app.use((req, res) => {
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'API route not found' });
+    }
+    res.sendFile(path.join(ROOT, 'index.html'));
+});
+
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
 app.listen(PORT, () => {
-    console.log(`🚀 DEFOR Backend API running on http://localhost:${PORT}`);
-    console.log(`📊 Environment: ${process.env.NODE_ENV}`);
+    console.log(`DEFOR running on http://localhost:${PORT}`);
+    console.log(`Serving files from: ${ROOT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
 });
 
 module.exports = app;
