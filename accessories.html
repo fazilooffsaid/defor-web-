@@ -156,6 +156,17 @@
         </div>
     </section>
 
+    <section style="padding: 60px 0;">
+        <div class="container">
+            <div style="margin-bottom: 15px; font-size: 14px; color: #666;">
+                <a href="index.html" style="color: #4a90e2; text-decoration: none;" data-i18n="nav-home">Главная</a> &gt;
+                <span style="color: #4a90e2;" data-i18n="nav-accessories">Аксессуары</span>
+            </div>
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 400; margin-bottom: 40px;" data-i18n="page-accessories-title">Аксессуары</h1>
+            <div class="product-grid" id="accessories-products"></div>
+        </div>
+    </section>
+
     <!-- Product Showcase -->
     <section class="showcase-section">
         <div class="container">
@@ -292,6 +303,36 @@
             loadShowcasePhotos();
             updateCartCount();
         });
+    </script>
+    <script>
+        function renderAccessories() {
+            const lang = getLang ? getLang() : (localStorage.getItem('defor_lang') || 'ru');
+            const badgeMap = { ru: 'Новые поступления', uz: 'Yangi kelganlar', en: 'New Arrival' };
+            const comingMap = { ru: 'Товары скоро появятся', uz: "Mahsulotlar tez orada paydo bo'ladi", en: 'Products coming soon' };
+            const grid = document.getElementById('accessories-products');
+            if (!grid) return;
+            const products = getDB().filter(p => p.category === 'accessories');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card" onclick="window.location.href='product.html?id=${p.id}'">
+                    <div class="product-image">
+                        ${p.isNew ? `<div class="product-badge">${badgeMap[lang] || badgeMap.ru}</div>` : ''}
+                        <img src="${p.images[0]}" alt="${p.title}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-collection">${p.collection}</div>
+                        <div class="product-name">${p.title}</div>
+                        <div class="product-color">${p.colors[0].name}</div>
+                        <div class="product-price">${Number(p.price).toLocaleString('ru-RU')} UZS</div>
+                    </div>
+                </div>
+            `).join('') || `<p style="grid-column:1/-1;text-align:center;padding:60px;color:#999;">${comingMap[lang] || comingMap.ru}</p>`;
+        }
+        getDBAsync().then(data => {
+            window._dbCache = data;
+            localStorage.setItem('defor_db', JSON.stringify(data));
+            renderAccessories();
+        });
+        renderAccessories();
     </script>
 
     <!-- lang-switcher ПОСЛЕДНИМ -->
