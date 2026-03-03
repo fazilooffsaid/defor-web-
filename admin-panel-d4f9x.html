@@ -311,19 +311,37 @@
             renderSlot(index);
         }
 
-        function saveShowcasePhotos() {
+        async function saveShowcasePhotos() {
             for (let i = 0; i < 3; i++) {
                 if (slotData[i] !== null) {
-                    localStorage.setItem(`defor_showcase_${i}`, slotData[i]);
+                    try {
+                        await fetch('/api/showcase', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ slotIndex: i, imageData: slotData[i] })
+                        });
+                        localStorage.setItem(`defor_showcase_${i}`, slotData[i]);
+                    } catch(e) {
+                        localStorage.setItem(`defor_showcase_${i}`, slotData[i]);
+                    }
                 }
             }
             alert('✅ Фото коллекции сохранены! Обновите главную страницу чтобы увидеть изменения.');
         }
 
-        function loadSavedSlots() {
-            for (let i = 0; i < 3; i++) {
-                const saved = localStorage.getItem(`defor_showcase_${i}`);
-                if (saved) { slotData[i] = saved; renderSlot(i); }
+        async function loadSavedSlots() {
+            try {
+                const res = await fetch('/api/showcase');
+                const photos = await res.json();
+                for (let i = 0; i < 3; i++) {
+                    const photo = photos.find(p => p.slot_index === i);
+                    if (photo) { slotData[i] = photo.image_data; renderSlot(i); }
+                }
+            } catch(e) {
+                for (let i = 0; i < 3; i++) {
+                    const saved = localStorage.getItem(`defor_showcase_${i}`);
+                    if (saved) { slotData[i] = saved; renderSlot(i); }
+                }
             }
         }
 
