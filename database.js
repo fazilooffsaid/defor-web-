@@ -92,10 +92,7 @@ async function saveOrder(order) {
         if (!res.ok) throw new Error('Order save failed');
         return await res.json();
     } catch (e) {
-        console.warn('⚠ Заказ fallback localStorage:', e.message);
-        const orders = JSON.parse(localStorage.getItem('defor_orders')) || [];
-        orders.push({ ...order, id: 'ORDER-' + Date.now(), date: new Date().toISOString() });
-        localStorage.setItem('defor_orders', JSON.stringify(orders));
+        console.warn('⚠ Заказ не сохранён:', e.message);
     }
 }
 

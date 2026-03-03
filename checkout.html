@@ -234,7 +234,7 @@
 
             // Сохраняем заказ (PostgreSQL / fallback localStorage)
             await saveOrder({
-                customer: { name, city, phone },
+                name, city, phone,
                 items: cart,
                 total: grandTotal,
                 orderNumber,
