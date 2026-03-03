@@ -122,7 +122,18 @@ function addToCart(product, quantity = 1, selectedColor = null) {
     if (existing) {
         existing.quantity += quantity;
     } else {
-        cart.push({ ...product, quantity, selectedColor });
+        cart.push({
+            id: product.id,
+            title: product.title,
+            collection: product.collection,
+            price: product.price,
+            category: product.category,
+            colors: product.colors ? product.colors.map(c => ({ name: c.name, available: c.available })) : [],
+            images: product.images ? [product.images[0]] : [],
+            isNew: product.isNew,
+            quantity,
+            selectedColor
+        });
     }
     saveCart(cart);
 }
