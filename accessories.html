@@ -107,7 +107,7 @@
         // Async load from API
         getDBAsync().then(data => {
             window._dbCache = data;
-            localStorage.setItem('defor_db', JSON.stringify(data));
+            
             renderAccessories();
         });
         renderAccessories();

@@ -115,7 +115,7 @@
 
         // Load from API (PostgreSQL)
         getDBAsync().then(data => {
-            localStorage.setItem('defor_db', JSON.stringify(data));
+            
             renderNewArrivals(data);
         });
         renderNewArrivals();

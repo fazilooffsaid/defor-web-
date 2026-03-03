@@ -10,7 +10,7 @@ const API = (window.location.hostname === 'localhost' || window.location.hostnam
     : '/api';
 
 // ── Кэш товаров (чтобы getDB() работал синхронно после первой загрузки) ──
-let _cache = JSON.parse(localStorage.getItem('defor_db')) || [];
+let _cache = [];
 
 // ── ТОВАРЫ ────────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ async function getDBAsync() {
         if (!res.ok) throw new Error('API error');
         const data = await res.json();
         _cache = data;
-        localStorage.setItem('defor_db', JSON.stringify(data));
+        // не кэшируем товары в localStorage
         return data;
     } catch (e) {
         console.warn('⚠ API недоступен, используем кэш:', e.message);
@@ -151,5 +151,5 @@ function getCartTotal() {
 // Совместимость
 function saveDB(data) {
     _cache = data;
-    localStorage.setItem('defor_db', JSON.stringify(data));
+    // не кэшируем товары в localStorage
 }
