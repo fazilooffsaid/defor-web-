@@ -2,7 +2,7 @@
 // ВАЖНО: переводы управляются только через lang-switcher.js
 // Здесь только утилиты: корзина, toast, hero
 
-const API_URL = "https://defor-web.onrender.com"; // URL твоего Render backend
+const API_URL = ""; // URL твоего Render backend
 
 // ========================
 // Корзина и Toast
